@@ -1,0 +1,4 @@
+{"timestamp":"2023-07-27 12:34:23.660 Z","level":"info","msg":"Server is initializing...","caller":"platform/service.go:172","go_version":"go1.19.5"}
+{"timestamp":"2023-07-27 12:31:55.185 Z","level":"fatal","msg":"Failed to apply database migrations.","caller":"sqlstore/store.go:173","error":"driver: postgres, ...."}
+{"timestamp":"2023-07-27 12:34:23.660 Z","level":"info","msg":"EXPERIMENTAL: Starting Bleve","caller":"bleveengine/bleve.go:185"}
+
