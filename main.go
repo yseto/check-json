@@ -49,6 +49,7 @@ func main() {
 		stateHandle = state.New(filepath.Join(*stateDir, stateFilename(*filename)))
 	}
 
+	exitCode := 0
 	err = reader.New(*filename, stateHandle).Read(ctx, func(r io.Reader) {
 		scanner := bufio.NewScanner(r)
 		scanner.Split(bufio.ScanLines)
@@ -60,16 +61,21 @@ func main() {
 			default:
 				obj := make(map[string]any, 0)
 				json.Unmarshal(scanner.Bytes(), &obj)
-				eval(ctx, query, obj, *outputFormat)
+				exitCode += eval(ctx, query, obj, *outputFormat)
 			}
 		}
 	})
 	if err != nil {
 		log.Fatalln(err)
 	}
+	if exitCode > 0 {
+		exitCode = 1
+	}
+	os.Exit(exitCode)
 }
 
-func eval(ctx context.Context, query *gojq.Query, input any, format string) {
+func eval(ctx context.Context, query *gojq.Query, input any, format string) int {
+	exitCode := 0
 	iter := query.RunWithContext(ctx, input)
 	for {
 		v, ok := iter.Next()
@@ -82,8 +88,10 @@ func eval(ctx context.Context, query *gojq.Query, input any, format string) {
 		}
 		// fmt.Printf("%#v\n", v)
 		output(ctx, format, v)
+		exitCode = 1
 		// fmt.Println("")
 	}
+	return exitCode
 }
 
 func output(ctx context.Context, format string, input any) {
